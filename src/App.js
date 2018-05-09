@@ -58,6 +58,14 @@ class App extends Component {
         )
     }
 
+    deleteTask = (taskUid) => (
+        fetch('https://jfddl4-sandbox.firebaseio.com/magda/tasks/' + taskUid + '/.json',
+            {
+                method: 'DELETE'
+            }
+            ).then(this.loadTasks)
+    )
+
     render() {
         return (
             <div>
@@ -68,6 +76,7 @@ class App extends Component {
                     fullWidth={true}
                 />
                 <RaisedButton
+                    name={'add-tasks'}
                     fullWidth={true}
                     secondary={true}
                     label={'do it!'}
@@ -79,7 +88,12 @@ class App extends Component {
                         :
                         <ol>
                             {this.state.tasks.map(
-                                task => <li key={task.key}>{task.value}</li>
+                                task => (
+                                    <li key={task.key}
+                                        onClick={() => this.deleteTask(task.key)}
+                                    >
+                                        {task.value}
+                                        </li>)
                             )
                             }
                         </ol>
