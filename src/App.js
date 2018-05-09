@@ -18,11 +18,8 @@ class App extends Component {
             .then(data => {
                 const dataInArray = (
                     Object.entries(data) //zamienia obiekt na tablicę tablic
-                        //poniższy map zamienia tablicę tablic na tablicę obiektów
-                        .map(el => ({
-                            key: el[0],
-                            value: el[1]
-                        }))
+                    //poniższy map zamienia tablicę tablic na tablicę obiektów
+                        .map(([key, value]) => ({key, value}))
                 )
                 console.log(dataInArray)
             })
