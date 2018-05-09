@@ -4,22 +4,15 @@ import React, {Component} from 'react';
 class App extends Component {
 
     state = {
-        counter: ''
+        counter: 0
     }
 
-    decHandler = () => {
-        this.setState({
-            counter: this.state.counter - 1
-        }, this.saveToDb)
+
+    componentDidMount() {
+        this.readFromDb()
     }
 
-    incHandler = () => {
-        this.setState({
-            counter: this.state.counter + 1
-        }, this.saveToDb)
-    }
-
-    componentDidMount = () => {
+    readFromDb = () => {
         fetch('https://jfddl4-sandbox.firebaseio.com/magda/counter/.json')
             .then(response => response.json())
             .then(actualCounterVal => this.setState({
@@ -28,12 +21,21 @@ class App extends Component {
             )
     }
 
-    saveToDb = () => fetch('https://jfddl4-sandbox.firebaseio.com/magda/counter/.json',
+    saveToDb = (data) => fetch('https://jfddl4-sandbox.firebaseio.com/magda/counter/.json',
         {
             method: "PUT",
-            body: JSON.stringify(this.state.counter)
+            body: JSON.stringify(data)
         }
-    )
+    ).then(this.readFromDb)
+
+
+    decHandler = () => {
+        this.saveToDb(this.state.counter - 1)
+    }
+
+    incHandler = () => {
+        this.saveToDb(this.state.counter + 1)
+    }
 
 
     render() {
