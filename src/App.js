@@ -6,10 +6,15 @@ import RaisedButton from 'material-ui/RaisedButton'
 class App extends Component {
 
     state = {
-        newTask: ''
+        newTask: '',
+        allTasks: null //najlepiej null żeby późnej dać loading w czasie gdy jest null
     }
 
     componentDidMount() {
+        this.loadTasks()
+    }
+
+    loadTasks = () => (
         fetch('https://jfddl4-sandbox.firebaseio.com/magda/tasks/.json',
             {
                 method: "GET",
@@ -19,19 +24,25 @@ class App extends Component {
                 const dataInArray = (
                     Object.entries(data) //zamienia obiekt na tablicę tablic
                     //poniższy map zamienia tablicę tablic na tablicę obiektów
-                        .map(([key, value]) => ({key, value}))
+                        .map(el => ({
+                            key: el[0],
+                            value: el[1]
+                        }))
                 )
-                console.log(dataInArray)
+                this.setState({
+                    tasks: dataInArray
+                })
             })
-    }
+    )
 
     saveAtDbs = () => {
         fetch('https://jfddl4-sandbox.firebaseio.com/magda/tasks/.json',
             {
                 method: "POST",
                 body: JSON.stringify(this.state.newTask)
-            })
+            }).then(this.loadTasks)
         this.setState({newTask: ''})
+
     }
 
     newTaskHandler = (event, value) => {
@@ -62,6 +73,17 @@ class App extends Component {
                     label={'do it!'}
                     onClick={this.sendFunction}
                 />
+                {
+                    !this.state.tasks ?
+                        'loading...'
+                        :
+                        <ol>
+                            {this.state.tasks.map(
+                                task => <li key={task.key}>{task.value}</li>
+                            )
+                            }
+                        </ol>
+                }
 
             </div>
         )
