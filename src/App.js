@@ -6,110 +6,66 @@ import RaisedButton from 'material-ui/RaisedButton'
 class App extends Component {
 
     state = {
-        counter: 0,
-        newText: null
+        newTask: ''
     }
-
 
     componentDidMount() {
-        this.readFromDb()
-        this.readFromDbs()
+        fetch('https://jfddl4-sandbox.firebaseio.com/magda/tasks/.json',
+            {
+                method: "GET",
+            }).then(response => response.json())
+
+            .then(data => {
+                const dataInArray = (
+                    Object.entries(data) //zamienia obiekt na tablicę tablic
+                        //poniższy map zamienia tablicę tablic na tablicę obiektów
+                        .map(el => ({
+                            key: el[0],
+                            value: el[1]
+                        }))
+                )
+                console.log(dataInArray)
+            })
     }
 
-    readFromDb = () => {
-        fetch('https://jfddl4-sandbox.firebaseio.com/magda/counter/.json')
-            .then(response => response.json())
-            .then(actualCounterVal => this.setState({
-                    counter: actualCounterVal
-                })
-            )
-    }
-    readFromDbs = () => {
-        fetch('https://jfddl4-sandbox.firebaseio.com/magda/text/.json')
-            .then(response => response.json())
-            .then(actualText => this.setState({
-                    newText: actualText
-                })
-            )
+    saveAtDbs = () => {
+        fetch('https://jfddl4-sandbox.firebaseio.com/magda/tasks/.json',
+            {
+                method: "POST",
+                body: JSON.stringify(this.state.newTask)
+            })
+        this.setState({newTask: ''})
     }
 
-
-    saveToDb = (data) => fetch('https://jfddl4-sandbox.firebaseio.com/magda/counter/.json',
-        {
-            method: "PUT",
-            body: JSON.stringify(data)
-        }
-    ).then(this.readFromDb)
-
-    saveToDbs = (text) => fetch('https://jfddl4-sandbox.firebaseio.com/magda/text/.json',
-        {
-            method: "PUT",
-            body: JSON.stringify(text)
-        }
-    ).then(this.readFromDbs)
-
-
-    decHandler = () => {
-        this.saveToDb(this.state.counter - 1)
-    }
-
-    incHandler = () => {
-        this.saveToDb(this.state.counter + 1)
-    }
-
-    addText = () => {
-        this.saveToDbs(
-            this.state.newText
-        )
-    }
-
-    newText = (event, newText) => {
+    newTaskHandler = (event, value) => {
         this.setState({
-            newText: newText
+            newTask: value
         })
     }
 
+
+    sendFunction = () => {
+        this.saveAtDbs(
+            this.state.newTask
+        )
+    }
+
     render() {
-        const isLoading = this.state.newText === null
         return (
             <div>
-                <h2>Da kaunter</h2>
-                <h2>{this.state.counter}</h2>
-                <button onClick={this.decHandler}>-</button>
-                <button onClick={this.incHandler}>+</button>
-                <div>
+                <TextField
+                    name={"field-for-tasks"}
+                    value={this.state.newTask}
+                    onChange={this.newTaskHandler}
+                    fullWidth={true}
+                />
+                <RaisedButton
+                    fullWidth={true}
+                    secondary={true}
+                    label={'do it!'}
+                    onClick={this.sendFunction}
+                />
 
-                    {/*<TextField*/}
-                        {/*disabled= {this.state.newText === null}*/}
-                        {/*onChange={this.newText}*/}
-                        {/*value={this.state.newText}*/}
-                        {/*name={'new-tet'}*/}
-                        {/*placeholder={'Add new text'}*/}
-                        {/*fullWidth={true}*/}
-                    {/*/>*/}
-                    {/*<RaisedButton*/}
-                        {/*disabled= {this.state.newText === null}*/}
-                        {/*onClick={this.addText}*/}
-                        {/*primary={true}*/}
-                        {/*fullWidth={true}*/}
-                        {/*label={'ADD'}*/}
-                    {/*/>*/}
-                    <TextField
-                        disabled= {isLoading}
-                        onChange={this.newText}
-                        value={this.state.newText}
-                        name={'new-tet'}
-                        placeholder={'Add new text'}
-                        fullWidth={true}
-                    />
-                    <RaisedButton
-                        disabled= {isLoading}
-                        onClick={this.addText}
-                        primary={true}
-                        fullWidth={true}
-                        label={'ADD'}
-                    />
-                </div>
             </div>
         )
     }
