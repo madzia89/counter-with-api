@@ -7,7 +7,7 @@ class App extends Component {
 
     state = {
         counter: 0,
-        newText: ''
+        newText: null
     }
 
 
@@ -57,7 +57,7 @@ class App extends Component {
         this.saveToDb(this.state.counter + 1)
     }
 
-    addText =() => {
+    addText = () => {
         this.saveToDbs(
             this.state.newText
         )
@@ -70,6 +70,7 @@ class App extends Component {
     }
 
     render() {
+        const isLoading = this.state.newText === null
         return (
             <div>
                 <h2>Da kaunter</h2>
@@ -77,7 +78,24 @@ class App extends Component {
                 <button onClick={this.decHandler}>-</button>
                 <button onClick={this.incHandler}>+</button>
                 <div>
+
+                    {/*<TextField*/}
+                        {/*disabled= {this.state.newText === null}*/}
+                        {/*onChange={this.newText}*/}
+                        {/*value={this.state.newText}*/}
+                        {/*name={'new-tet'}*/}
+                        {/*placeholder={'Add new text'}*/}
+                        {/*fullWidth={true}*/}
+                    {/*/>*/}
+                    {/*<RaisedButton*/}
+                        {/*disabled= {this.state.newText === null}*/}
+                        {/*onClick={this.addText}*/}
+                        {/*primary={true}*/}
+                        {/*fullWidth={true}*/}
+                        {/*label={'ADD'}*/}
+                    {/*/>*/}
                     <TextField
+                        disabled= {isLoading}
                         onChange={this.newText}
                         value={this.state.newText}
                         name={'new-tet'}
@@ -85,6 +103,7 @@ class App extends Component {
                         fullWidth={true}
                     />
                     <RaisedButton
+                        disabled= {isLoading}
                         onClick={this.addText}
                         primary={true}
                         fullWidth={true}
